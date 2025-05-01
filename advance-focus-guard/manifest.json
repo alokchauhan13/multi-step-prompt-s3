@@ -1,0 +1,41 @@
+{
+  "manifest_version": 3,
+  "name": "Advance Focus Guard",
+  "version": "1.0",
+  "description": "Advance Focus Guard - Your Ally in Focused Work",
+  "icons": {
+    "16": "images/icon-16.jpeg",
+    "32": "images/icon-32.jpeg",
+    "48": "images/icon-48.jpeg",
+    "128": "images/icon-128.jpeg"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "images/icon-16.jpeg",
+      "32": "images/icon-32.jpeg",
+      "48": "images/icon-48.jpeg",
+      "128": "images/icon-128.jpeg"
+    }
+  },
+  "permissions": [
+    "storage",
+    "tabs",
+    "activeTab",
+    "scripting"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "js/background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["js/content.js"],
+      "css": ["css/content.css"],
+      "run_at": "document_idle"
+    }
+  ]
+}

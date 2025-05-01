@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advance Focus Guard</title>
+    <link rel="stylesheet" href="css/popup.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <img src="images/Advance-Focus-Guard.jpeg" alt="Advance Focus Guard" class="logo">
+            <h1>Advance Focus Guard</h1>
+            <p class="tagline">Your Ally in Focused Work</p>
+        </header>
+
+        <div class="status-section">
+            <div id="guard-status">
+                <button id="guard-button" class="primary-button">Guard</button>
+            </div>
+
+            <div id="page-info" class="hidden">
+                <div class="page-status">
+                    <span>Current page:</span>
+                    <span id="page-category-classification"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="input-section">
+            <div class="form-group">
+                <label for="activity-description">What are you working on? (Max 120 words)</label>
+                <textarea id="activity-description" rows="4" maxlength="1200" placeholder="Describe your activity..."></textarea>
+                <span id="word-count">0/120 words</span>
+            </div>
+
+            <div class="form-group">
+                <label for="monitoring-duration">Monitoring Duration (minutes)</label>
+                <input type="number" id="monitoring-duration" min="1" value="120">
+            </div>
+        </div>
+
+        <div id="intent-section" class="hidden">
+            <h2>Intent for visiting this website</h2>
+            <div class="intent-options">
+                <button class="intent-button" data-intent="Relaxation">Relaxation</button>
+                <button class="intent-button" data-intent="Curiosity">Curiosity</button>
+                <button class="intent-button" data-intent="Habit">Habit</button>
+            </div>
+        </div>
+
+        <div class="api-key-section">
+            <div class="form-group">
+                <label for="api-key">Gemini API Key</label>
+                <div class="api-input-container">
+                    <input type="password" id="api-key" placeholder="Enter your Gemini API key">
+                    <button id="toggle-password" class="toggle-button">👁️</button>
+                </div>
+                <p class="help-text">Default key: *************************DVU</p>
+            </div>
+        </div>
+
+        <div id="status-message" class="status-message"></div>
+    </div>
+    <script src="js/popup.js"></script>
+</body>
+</html>
