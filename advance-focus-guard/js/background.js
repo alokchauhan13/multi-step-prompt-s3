@@ -972,8 +972,9 @@ function generateUniqueId() {
 // Handle generate report action
 async function handleGenerateReport(sendResponse) {
     try {
-        const result = "Generating report...";
-        sendResponse(result);
+        debug('Handling generate report request');
+        // Simply respond with success - the popup will handle the actual report generation
+        sendResponse({ success: true });
     } catch (error) {
         debug(`Error in handleGenerateReport: ${error.message}`);
         sendResponse({ success: false, error: error.message });
