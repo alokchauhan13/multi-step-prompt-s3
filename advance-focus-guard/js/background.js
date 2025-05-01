@@ -179,7 +179,13 @@ function initializeDatabase() {
 // Check if already guarding
 async function checkGuardingState() {
     try {
-        const data = await chrome.storage.local.get(['is_guarding', 'activity_description', 'guard_start_time', 'monitoring_duration']);
+        const data = await chrome.storage.local.get([
+            'is_guarding', 
+            'activity_description', 
+            'guard_start_time', 
+            'monitoring_duration',
+            'current_input_id'
+        ]);
         
         if (data.is_guarding) {
             // Check if the guarding duration has expired
@@ -199,11 +205,19 @@ async function checkGuardingState() {
                 isGuarding = true;
                 currentActivity = data.activity_description || '';
                 
-                // Retrieve the most recent inputId
-                const latestInput = await getLatestUserInput();
-                if (latestInput) {
-                    currentInputId = latestInput.inputId;
-                    debug(`Restored inputId: ${currentInputId}`);
+                // First try to get inputId from chrome.storage
+                if (data.current_input_id) {
+                    currentInputId = data.current_input_id;
+                    debug(`Restored inputId from storage: ${currentInputId}`);
+                } else {
+                    // If not available in storage, try to get from IndexedDB
+                    const latestInput = await getLatestUserInput();
+                    if (latestInput) {
+                        currentInputId = latestInput.inputId;
+                        debug(`Restored inputId from IndexedDB: ${currentInputId}`);
+                    } else {
+                        debug('No inputId found, guarding may not work properly');
+                    }
                 }
             }
         }
@@ -221,6 +235,10 @@ async function handleStartGuarding(data, sendResponse) {
         
         // Generate a new inputId
         currentInputId = generateUniqueId();
+        
+        // Save inputId to chrome.storage to persist across sessions
+        await chrome.storage.local.set({ 'current_input_id': currentInputId });
+        debug(`Saved inputId to storage: ${currentInputId}`);
         
         // Save user input to IndexedDB
         await saveUserInput({
@@ -277,10 +295,10 @@ function schedulePageEvaluation(tabId, url) {
 // Handle evaluate page action
 async function handleEvaluatePage(tabId, url, sendResponse) {
     try {
-        debug(`Evaluating page for tab ${tabId}, url: ${url}`);
+        debug(`Evaluating page for tab ${tabId}, url: ${url}, inputId: ${currentInputId}, isGuarding: ${isGuarding}`);
         
         if (!isGuarding || !currentInputId) {
-            debug('Not guarding or no current inputId, skipping evaluation');
+            debug(`Not guarding or no current inputId, skipping evaluation`);
             if (sendResponse) sendResponse({ success: false, error: 'Not guarding or no active session' });
             return;
         }
@@ -486,21 +504,98 @@ async function handleSetPageIntent(tabId, url, intent, sendResponse) {
     }
 }
 
-// Apply mask to tab
+// Apply mask to tab with retries
 function applyMaskToTab(tabId) {
     debug(`Applying mask to tab ${tabId}`);
     
-    chrome.tabs.sendMessage(tabId, { action: 'showMask' })
-        .then(response => {
-            if (response && response.success) {
-                debug('Mask applied successfully');
+    // First check if the content script is ready
+    checkContentScriptStatus(tabId)
+        .then(isReady => {
+            if (isReady) {
+                return sendMaskMessage(tabId);
             } else {
-                debug('Failed to apply mask');
+                // If content script is not ready, inject it manually
+                debug('Content script not ready, injecting scripts');
+                return injectContentScriptsAndMask(tabId);
             }
         })
         .catch(error => {
             debug(`Error applying mask: ${error.message}`);
+            // Try injecting scripts and applying mask as fallback
+            injectContentScriptsAndMask(tabId);
         });
+}
+
+// Check if content script is ready
+function checkContentScriptStatus(tabId) {
+    return new Promise((resolve, reject) => {
+        chrome.tabs.sendMessage(tabId, { action: 'checkContentScriptStatus' })
+            .then(response => {
+                if (response && response.success) {
+                    debug(`Content script status for tab ${tabId}: ${response.ready}`);
+                    resolve(response.ready);
+                } else {
+                    debug(`No valid response from content script in tab ${tabId}`);
+                    resolve(false);
+                }
+            })
+            .catch(error => {
+                debug(`Error checking content script status: ${error.message}`);
+                resolve(false);
+            });
+    });
+}
+
+// Send showMask message to content script
+function sendMaskMessage(tabId) {
+    return new Promise((resolve, reject) => {
+        chrome.tabs.sendMessage(tabId, { action: 'showMask' })
+            .then(response => {
+                if (response && response.success) {
+                    debug('Mask applied successfully');
+                    resolve(true);
+                } else {
+                    debug('Failed to apply mask, response indicates failure');
+                    resolve(false);
+                }
+            })
+            .catch(error => {
+                debug(`Error sending mask message: ${error.message}`);
+                reject(error);
+            });
+    });
+}
+
+// Inject content scripts and apply mask
+function injectContentScriptsAndMask(tabId) {
+    return new Promise((resolve, reject) => {
+        // First try to execute the content script
+        chrome.scripting.executeScript({
+            target: { tabId: tabId },
+            files: ['js/content.js']
+        })
+        .then(() => {
+            debug('Content script injected, now injecting CSS');
+            // Then inject the CSS
+            return chrome.scripting.insertCSS({
+                target: { tabId: tabId },
+                files: ['css/content.css']
+            });
+        })
+        .then(() => {
+            debug('CSS injected, waiting for content script to initialize');
+            // Wait a bit for the script to initialize
+            setTimeout(() => {
+                sendMaskMessage(tabId)
+                    .then(result => resolve(result))
+                    .catch(error => reject(error));
+            }, 500);
+        })
+        .catch(error => {
+            debug(`Error injecting content scripts: ${error.message}`);
+            reject(error);
+        });
+    });
 }
 
 // Get content from tab
@@ -522,7 +617,7 @@ async function getContentFromTab(tabId) {
 
 // Classify page using Gemini API
 async function classifyPage(apiKey, activity, pageContent) {
-    debug('Classifying page using Gemini API');
+    debug('####Classifying page using Gemini API####');
     
     // Define all possible categories
     const categories = [
@@ -583,7 +678,6 @@ ${pageContent.content}`;
         });
         
         const data = await response.json();
-        
         if (!response.ok) {
             debug(`API error: ${JSON.stringify(data)}`);
             throw new Error(`API error: ${data.error?.message || 'Unknown error'}`);

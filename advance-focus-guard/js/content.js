@@ -5,10 +5,11 @@ const debug = (message) => {
 
 // Track if mask is currently shown
 let isMaskShown = false;
+let isContentScriptReady = false;
 
 // Initialize content script
 (function() {
-    debug('Content script initialized');
+    debug('Content script initializing');
     
     // Listen for messages from background script
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -26,8 +27,24 @@ let isMaskShown = false;
             const content = getPageContent();
             sendResponse({ success: true, content });
             return true;
+        } else if (message.action === 'checkContentScriptStatus') {
+            sendResponse({ success: true, ready: isContentScriptReady });
+            return true;
         }
     });
+
+    // Mark the content script as ready when the document is fully loaded
+    if (document.readyState === 'complete') {
+        isContentScriptReady = true;
+        debug('Content script ready (document already loaded)');
+    } else {
+        window.addEventListener('load', () => {
+            isContentScriptReady = true;
+            debug('Content script ready (document load event)');
+        });
+    }
+    
+    debug('Content script initialized and listening for messages');
 })();
 
 // Show mask overlay
@@ -64,6 +81,7 @@ function showMask() {
     // Add to body
     document.body.appendChild(mask);
     isMaskShown = true;
+    debug('Mask added to page');
 }
 
 // Hide mask overlay
