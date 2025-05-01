@@ -123,13 +123,11 @@ curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:g
 ```
 
 ## Report from Extension
-I would like Chrome extension `Advance Focus Guard` to generate report in separate tab as html page. Extension should you IndexedDB and following object store to determine "evaluations" and "intents"
+I would like Chrome extension `Advance Focus Guard` to generate report in separate tab as html page. Extension should use IndexedDB and following object store "evaluations" and "intents" to generate report data.
 
-Gemini API should be used to evaluate these in sequence. If needed output of one prompt must be passed to other prompt as well. I want Now I would like to derive following stats with the help of gemini LLM.
+Gemini API should be used to evaluate these in sequence. If needed output of one prompt can be passed to other prompt as well. 
 
-Generate graphs or table if possible for each following outcome evaluations. Create a separate code file for this functionality
-
-This report user should be able to generate by a button named "Generate Report" from extension UI.
+Generate graphs or table for each of the following outcome evaluations. This report user should be able to generate by a button named "Generate Report" from extension UI.
 
 1. Time Spent by Intent Over Time
 What: Aggregate time spent on each intent per day/week.
