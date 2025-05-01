@@ -15,6 +15,7 @@ const pageInfo = document.getElementById('page-info');
 const intentSection = document.getElementById('intent-section');
 const pageCategoryClassification = document.getElementById('page-category-classification');
 const intentButtons = document.querySelectorAll('.intent-button');
+const generateReportButton = document.getElementById('generate-report-button');
 
 // Global state
 let isGuarding = false;
@@ -205,6 +206,9 @@ function setupEventListeners() {
     intentButtons.forEach(button => {
         button.addEventListener('click', () => setPageIntent(button.dataset.intent));
     });
+
+    // Generate Report button
+    generateReportButton.addEventListener('click', generateReport);
 }
 
 // Toggle guarding state
@@ -367,4 +371,26 @@ function showStatusMessage(message, isError = false) {
         statusMessage.textContent = '';
         statusMessage.classList.remove('error', 'success');
     }, 5000);
+}
+
+// Generate analytics report
+async function generateReport() {
+    try {
+        debug('Generating analytics report');
+        showStatusMessage('Generating report...', false);
+        
+        // Send message to background script to generate report
+        const response = await chrome.runtime.sendMessage({ action: 'generateReport' });
+        
+        if (response && response.success) {
+            debug('Report generated successfully');
+            showStatusMessage('Report generated successfully', false);
+        } else {
+            debug(`Error generating report: ${response?.error || 'Unknown error'}`);
+            showStatusMessage(`Error generating report: ${response?.error || 'Unknown error'}`, true);
+        }
+    } catch (error) {
+        debug(`Error generating report: ${error.message}`);
+        showStatusMessage(`Error generating report: ${error.message}`, true);
+    }
 }

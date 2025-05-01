@@ -83,6 +83,10 @@ function setupListeners() {
             case 'setPageIntent':
                 handleSetPageIntent(message.tabId, message.url, message.intent, sendResponse);
                 return true;
+                
+            case 'generateReport':
+                handleGenerateReport(sendResponse);
+                return true;
         }
     });
     
@@ -964,3 +968,15 @@ async function getApiKey() {
 function generateUniqueId() {
     return Date.now().toString(36) + Math.random().toString(36).substr(2);
 }
+
+// Handle generate report action
+async function handleGenerateReport(sendResponse) {
+    try {
+        const result = "Generating report...";
+        sendResponse(result);
+    } catch (error) {
+        debug(`Error in handleGenerateReport: ${error.message}`);
+        sendResponse({ success: false, error: error.message });
+    }
+}
+

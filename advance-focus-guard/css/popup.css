@@ -247,3 +247,31 @@ textarea:focus, input[type="number"]:focus, input[type="password"]:focus {
 .hidden {
     display: none !important;
 }
+
+/* Report section */
+.report-section {
+    margin: 15px 0;
+    text-align: center;
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+}
+
+.secondary-button {
+    padding: 8px 15px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.secondary-button:hover {
+    background-color: #388e3c;
+}
+
+.secondary-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
