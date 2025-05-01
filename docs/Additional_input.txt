@@ -1,0 +1,69 @@
+Time Spent by Intent Over Time
+What: Aggregate time spent on each intent per day/week.
+
+Why: Understand focus trends and when certain intents dominate.
+
+Insight Example: “Most of your curiosity browsing happens late at night.”
+
+2. Peak Distraction Times
+What: Analyze timestamps of non-work intents (relaxation, curiosity, habit).
+
+Why: Identify when the user is most prone to distraction.
+
+Insight Example: “You tend to drift into habit browsing around 2 PM.”
+
+3. Intent Switching Patterns
+What: Sequence analysis of browsing intent (e.g., work → curiosity → habit).
+
+Why: Understand how users transition between focused and distracted states.
+
+Insight Example: “Most work sessions end with curiosity-driven browsing within 25 minutes.”
+
+4. Productivity Ratios
+What: Compute ratio of work vs. non-work (relaxation, curiosity, habit).
+
+Why: Track effectiveness and improvement over time.
+
+Insight Example: “Your work focus improved by 15% compared to last week.”
+
+5. Top Distraction Sources
+What: Identify top websites visited under distraction intents.
+
+Why: Highlight specific distractions (e.g., YouTube, Reddit).
+
+Insight Example: “Reddit accounted for 42% of your curiosity-driven visits.”
+
+6. Intent Drift Detection
+What: Detect when a work session gradually turns into relaxation/habit browsing.
+
+Why: Reveal how attention erodes during sessions.
+
+Insight Example: “Your average drift from work to relaxation takes ~12 minutes.”
+
+7. Goal Alignment Score
+What: Match visits and intent against user-defined daily goals.
+
+Why: Score how aligned browsing behavior is with planned focus.
+
+Insight Example: “Today’s focus score: 78%. You stayed on task until 4 PM.”
+
+8. Session Clustering
+What: Group sessions based on sequence, duration, and intent transitions.
+
+Why: Discover behavior patterns (e.g., "deep work sessions", "impulse scrolls").
+
+Insight Example: “You average 3 deep work blocks per day lasting 45 mins.”
+
+9. Daily/Weekly Trends
+What: Analyze intent breakdown across days and times of day.
+
+Why: Reveal routine patterns and optimal focus periods.
+
+Insight Example: “Mornings are your strongest work hours. Afternoons see a rise in habit visits.”
+
+10. Habitual Site Classification
+What: Identify frequently visited sites that fall under “habit” or “curiosity”.
+
+Why: Suggest blocks or time-boxing strategies.
+
+Insight Example: “Twitter was visited 18 times today, usually out of habit.”
