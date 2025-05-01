@@ -49,7 +49,18 @@ let isContentScriptReady = false;
 
 // Show mask overlay
 function showMask() {
-    if (isMaskShown) return;
+    // First, check if a mask already exists in DOM, regardless of our tracking variable
+    const existingMask = document.getElementById('afg-mask');
+    if (existingMask) {
+        debug('Mask already exists in DOM, not adding another one');
+        return;
+    }
+    
+    // Also check our tracking variable
+    if (isMaskShown) {
+        debug('Mask is already shown according to tracking variable');
+        return;
+    }
     
     debug('Showing mask');
     
@@ -86,14 +97,13 @@ function showMask() {
 
 // Hide mask overlay
 function hideMask() {
-    if (!isMaskShown) return;
-    
-    debug('Hiding mask');
-    
     const mask = document.getElementById('afg-mask');
     if (mask) {
+        debug('Hiding mask');
         mask.parentNode.removeChild(mask);
         isMaskShown = false;
+    } else {
+        debug('No mask found to hide');
     }
 }
 

@@ -121,3 +121,34 @@ curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:g
     ]
   }'
 ```
+
+## Report from Extension
+I would like Chrome extension `Advance Focus Guard` to generate report. Extension should you IndexedDB and following object store to determine "evaluations" and "intents"
+
+Gemini API should be used to evaluate these in sequence. If needed output of one prompt must be passed to other prompt as well. I want Now I would like to derive following stats with the help of gemini LLM.
+
+Generate graphs or table if possible for each following outcome evaluations. Create a separate file for this functionality
+
+1. Time Spent by Intent Over Time
+What: Aggregate time spent on each intent per day/week.
+Why: Understand focus trends and when certain intents dominate.
+Insight Example: “Most of your curiosity browsing happens late at night.”
+Pass this information to gemini and figure out following things:
+  - Which time of day like (Morning, afternoon, evening, night) which intent is most active
+  - Based on this input find of which top intents are distracting during working hours.
+
+Example:
+What: Analyze which top intents are distracting during working hours.
+Why: Identify when the user is most prone to distraction.
+Insight Example: “You tend to drift into habit browsing around afternoon.”
+
+2. Productivity Ratios
+What: Compute ratio of work vs. non-work (relaxation, curiosity, habit).
+Why: Track effectiveness and improvement over each day between morning 8 to evening 7 PM.
+Insight Example: “Your work focus improved by 15% compared to last week.”
+
+3. Top Distraction Sources
+What: Identify top websites visited under distraction intents and group them with title name
+Insight Example: “Youtube accounted for 42% of your curiosity-driven visits.”
+
+
