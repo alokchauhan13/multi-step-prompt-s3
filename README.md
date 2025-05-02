@@ -15,6 +15,7 @@
     ```bash
     uv run ipython kernel install --user --env VIRTUAL_ENV $(pwd)/.venv --name=multi-step-prompt-S3
     ```
+    `Kernel reference got created at : C:\Users\<----->\AppData\Roaming\jupyter\kernels\multi-step-prompt-s3`
 2. You may need to **restart VSCode**.
 
 ## Step 4: Use the Kernel in VSCode
