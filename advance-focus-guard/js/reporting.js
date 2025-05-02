@@ -59,9 +59,12 @@ async function generateReport() {
             return;
         }
         
+        // Get icon image as data URL
+        const iconDataUrl = await getImageAsDataUrl('../../images/Advance-Focus-Guard.jpeg');
+        
         // Generate HTML report
         showReportStatusMessage('Generating report...');
-        const reportHtml = await generateReportHtml(apiKey, reportData);
+        const reportHtml = await generateReportHtml(apiKey, reportData, iconDataUrl);
         
         // Open report in new tab
         openReportInNewTab(reportHtml);
@@ -178,7 +181,7 @@ async function getReportApiKey() {
 }
 
 // Generate the HTML report content
-async function generateReportHtml(apiKey, reportData) {
+async function generateReportHtml(apiKey, reportData, iconDataUrl) {
     try {
         // Prepare data for visualizations
         const timeSpentByIntent = processTimeSpentByIntent(reportData.intents, reportData.evaluations);
@@ -354,7 +357,7 @@ async function generateReportHtml(apiKey, reportData) {
         <body>
             <div class="container">
                 <header>
-                    <img src="../images/Advance-Focus-Guard.jpeg" alt="Advance Focus Guard" class="logo">
+                    <img src="${iconDataUrl}" alt="Advance Focus Guard" class="logo">
                     <h1>Advance Focus Guard Report</h1>
                     <p class="tagline">Your Ally in Focused Work</p>
                 </header>
@@ -763,4 +766,33 @@ function showReportStatusMessage(message, isError = false) {
             }, 5000);
         }
     }
+}
+
+// Helper function to convert an image to a data URL
+function getImageAsDataUrl(imagePath) {
+    return new Promise((resolve, reject) => {
+        try {
+            // Try to get the image using chrome.runtime API
+            chrome.runtime.getURL(imagePath).then(url => {
+                fetch(url)
+                    .then(response => response.blob())
+                    .then(blob => {
+                        const reader = new FileReader();
+                        reader.onloadend = () => resolve(reader.result);
+                        reader.onerror = () => reject(new Error('Failed to read image file'));
+                        reader.readAsDataURL(blob);
+                    })
+                    .catch(error => {
+                        // Fallback to a generic reporting icon if fetch fails
+                        resolve('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMjQgMjQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwNjZjYyIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Ik0yIDJoMjB2MjBINiIvPjxwYXRoIGQ9Ik0xMiAxMiBoMTR2MTRIMTIiLz48cGF0aCBkPSJNMTIgMTJoMTR2MTRIMTIiLz48L3N2Zz4=');
+                    });
+            }).catch(error => {
+                // Fallback in case chrome.runtime.getURL fails
+                resolve('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMjQgMjQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwNjZjYyIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Ik0yIDJoMjB2MjBINiIvPjxwYXRoIGQ9Ik0xMiAxMiBoMTR2MTRIMTIiLz48cGF0aCBkPSJNMTIgMTJoMTR2MTRIMTIiLz48L3N2Zz4=');
+            });
+        } catch (error) {
+            // Final fallback if all else fails
+            resolve('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMjQgMjQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwNjZjYyIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Ik0yIDJoMjB2MjBINiIvPjxwYXRoIGQ9Ik0xMiAxMiBoMTR2MTRIMTIiLz48cGF0aCBkPSJNMTIgMTJoMTR2MTRIMTIiLz48L3N2Zz4=');
+        }
+    });
 }
