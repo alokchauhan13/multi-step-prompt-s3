@@ -739,7 +739,12 @@ function openReportInNewTab(htmlContent) {
     const url = URL.createObjectURL(blob);
     
     // Open in a new tab
-    chrome.tabs.create({ url: url });
+    chrome.windows.create({
+        url: url,
+        type: 'popup',
+        width: 800,
+        height: 600
+    });
 }
 
 // Show status message in the popup
